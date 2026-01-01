@@ -1,0 +1,39 @@
+/*   *  - («универсальный селектор») */
+/* применяет стили ко всем элементам на странице (например, для сброса box-sizing или отступов). */
+/* Что делает: Выбирает любой элемент на странице. */
+/* Применение: Используется для "сброса" стилей (reset/normalize), чтобы привести отображение элементов к единому стандарту в разных браузерах. */
+/*  * — для принудительного изменения свойств у всех тегов сразу. */
+* {
+  box-sizing: border-box;
+}
+
+/* :root (Псевдокласс корня) */
+/* Что делает: Выбирает самый верхний элемент документа — <html> в HTML. */
+/* Специфичность: Выше, чем у тега html. */
+/* Применение: Чаще всего используется для объявления CSS-переменных (кастомных свойств), доступных во всем документе. */
+/* :root удобнее для хранения данных */
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Montserrat',
+    sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+
+  color: #242424;
+  /* background-color: rgba(255, 255, 255, 0.87); */
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+}

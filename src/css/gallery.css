@@ -1,0 +1,156 @@
+* {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  color: #2e2f42;
+  /* background-color: #fff; */
+}
+
+.main-title {
+  text-align: center;
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.input-search {
+  width: 272px;
+  padding: 8px 16px;
+  font: inherit;
+  border-radius: 4px;
+  border: 1px solid #808080;
+  outline: none;
+  color: #808080;
+}
+
+.input-search:hover {
+  border-color: #000000;
+}
+
+.input-search:active,
+.input-search:focus {
+  color: #2e2f42;
+  border-color: #4e75ff;
+}
+
+.btn-search {
+  display: flex;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  outline: none;
+  border: none;
+  font: inherit;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #4e75ff;
+}
+
+.btn-search:hover,
+.btn-search:focus {
+  background-color: #6c8cff;
+}
+
+.gallery {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 24px;
+  column-gap: 24px;
+}
+
+.gallery-item {
+  position: relative;
+  width: 360px;
+  height: 200px;
+  border: 1px solid #808080;
+}
+
+.gallery-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* overflow: hidden; */
+}
+
+.image-info {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 4px 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1;
+  background-color: #ffffff;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: center;
+}
+
+.info-label {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.info-count {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 2;
+}
+
+/* Візуальний загрузчик зображення */
+
+.loader-thumb {
+  display: none;
+  text-align: center;
+}
+
+.loader-thumb.visible {
+  display: block;
+}
+
+.loader {
+  text-align: center;
+  /* --- Setting Default : --- */
+  /* width: 48px; */
+  /* height: 48px; */
+  /* border: 5px solid; */
+  /* border-color: #ff3d00 transparent; */
+  /* box-sizing: border-box; */
+  /* -------------------------- */
+  width: 200px;
+  height: 200px;
+  border: 30px solid;
+  border-color: #50089d transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

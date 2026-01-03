@@ -80,7 +80,7 @@ refs.btnLoadMore.addEventListener('click', onbtnLoadMore);
 // ===================================================================
 // Обробник події submit форми
 // -------------------------------------------------------------------
-function onFormSubmit(event) {
+async function onFormSubmit(event) {
   // Обнулення події за замовчуванням
   event.preventDefault();
 
@@ -114,62 +114,66 @@ function onFormSubmit(event) {
   // Запит проводимо для першої сторінки
   pageCurrent = 1;
 
-  // Виклик функції запиту - getImagesByQuery(query, page)
-  getImagesByQuery(textSearch, pageCurrent)
-    .then(data => {
-      // Текст запиту - в консоль
-      // console.log(`Текст запиту`, textSearch);
-      // Властивість totalHits — загальна кількість зображень, які відповідають критерію пошуку
-      hitsCount = data.totalHits;
-      // console.log(`Загальна кількість картинок`, hitsCount);
-      // Кількість сторінок :
-      pageCount = Math.ceil(hitsCount / hitsOnPage);
-      // console.log(`Кількість сторінок`, pageCount);
-      // Повернення з даних властивості hits - масиву з картинками
-      return data.hits;
-    })
-    .then(images => {
-      // Прибираємо лоадер
-      hideLoader();
-      // Якщо запит не дав результатів (масив з відповідями пустий)
-      if (images.length === 0) {
-        // Опції вікна сповіщення - зміна назв
-        iziToastSetting.title = '';
-        iziToastSetting.message =
-          'Sorry, there are no images matching your search query. Please try again!';
-        // Показуємо вікно сповіщення - з помилкою
-        iziToast.show(iziToastSetting);
-        // Вихід
-        return;
-      }
+  // Змінна відповіді на запит
+  let data;
 
-      // Якщо запит дав результати :
+  // Робимо запит та перевіряємо на помилку
+  try {
+    // Виклик функції запиту - getImagesByQuery(query, page)
+    data = await getImagesByQuery(textSearch, pageCurrent);
+  } catch (error) {
+    // Прибираємо лоадер
+    hideLoader();
+    // Показуємо вікно сповіщення - з помилкою
+    iziToastErrorResource();
+    // Перезавантаження форми та ощищення значень полів форми
+    refs.form.reset();
+    // Вихід
+    return;
+  }
 
-      // Поточна сторінка - в консоль
-      // console.log(`Поточна сторінка`, pageCurrent);
+  // Властивість totalHits — загальна кількість зображень, які відповідають критерію пошуку
+  hitsCount = data.totalHits;
 
-      // Створюємо галерею в DOM
-      createGallery(images);
+  // Кількість сторінок :
+  pageCount = Math.ceil(hitsCount / hitsOnPage);
 
-      // Якщо кількість сторінок більше 1, то показуємо кнопку < Load More >
-      if (pageCount > 1) {
-        showLoadMoreButton();
-      } else {
-        // Показати сповіщення, що дійшли до кінця колекції
-        iziToastEndCollection();
-      }
-    })
-    .catch(error => {
-      // Прибираємо лоадер
-      hideLoader();
-      // Опції вікна сповіщення - зміна назв
-      iziToastSetting.title = '';
-      iziToastSetting.message = 'Sorry, error accessing resource';
-      // Показуємо вікно сповіщення - з помилкою
-      iziToast.show(iziToastSetting);
-      // Вихід
-      return;
-    });
+  //  Властивісті hits - це масив з картинками - images
+  const images = data.hits;
+
+  // Прибираємо лоадер
+  hideLoader();
+
+  // Якщо запит не дав результатів (масив з відповідями пустий)
+  if (images.length === 0) {
+    // Опції вікна сповіщення - зміна назв
+    iziToastSetting.title = '';
+    iziToastSetting.message =
+      'Sorry, there are no images matching your search query. Please try again!';
+    // Показуємо вікно сповіщення - з помилкою
+    iziToast.show(iziToastSetting);
+
+    // Перезавантаження форми та ощищення значень полів форми
+    refs.form.reset();
+    // Вихід
+    return;
+  }
+
+  // Якщо запит дав результати :
+
+  // Поточна сторінка - в консоль
+  // console.log(`Поточна сторінка`, pageCurrent);
+
+  // Створюємо галерею в DOM
+  createGallery(images);
+
+  // Якщо кількість сторінок більше 1, то показуємо кнопку < Load More >
+  if (pageCount > 1) {
+    showLoadMoreButton();
+  } else {
+    // Показати сповіщення, що дійшли до кінця колекції
+    iziToastEndCollection();
+  }
 
   // Перезавантаження форми та ощищення значень полів форми
   refs.form.reset();
@@ -178,7 +182,7 @@ function onFormSubmit(event) {
 // ===================================================================
 // Обробник події  click  на кнопці < Load More >
 // -------------------------------------------------------------------
-function onbtnLoadMore(event) {
+async function onbtnLoadMore(event) {
   // Прибираємо кнопку < Load More >
   hideLoadMoreButton();
 
@@ -189,54 +193,68 @@ function onbtnLoadMore(event) {
   // Запит проводимо для наступної сторінки
   pageCurrent = pageCurrent + 1;
 
-  // Виклик функції запиту - getImagesByQuery(query, page)
-  getImagesByQuery(textSearch, pageCurrent)
-    .then(data => {
-      // Повернення з даних властивості hits - масиву з картинками
-      return data.hits;
-    })
-    .then(images => {
-      // Прибираємо лоадер
-      hideLoader();
-      // Поточна сторінка - в консоль
-      // console.log(`Поточна сторінка`, pageCurrent);
-      // Додаємо картинки в галерею в DOM
-      createGallery(images);
-      // Якщо це НЕ остання сторінка, то показуємо кнопку < Load More >
-      if (pageCurrent < pageCount) {
-        showLoadMoreButton();
-      } else {
-        // Показати сповіщення, що дійшли до кінця колекції
-        iziToastEndCollection();
-      }
+  // Змінна відповіді на запит
+  let data;
 
-      // Прокрутка на 2 висоти картки :
-      // Отримуємо висоту картки :
-      const cardEl = document.querySelector('.gallery-item');
-      const heightCard = Number(cardEl.getBoundingClientRect().height);
-      // Робимо скролл екрану, вказуючи тільки кооррдинати по Y
-      // scrollBy(xCoord, yCoord);
-      scrollBy(0, heightCard * 2);
-    })
-    .catch(error => {
-      // Прибираємо лоадер
-      hideLoader();
-      // Опції вікна сповіщення - зміна назв
-      iziToastSetting.title = '';
-      iziToastSetting.message = 'Sorry, error accessing resource';
-      // Показуємо вікно сповіщення - з помилкою
-      iziToast.show(iziToastSetting);
-      // Вихід
-      return;
-    });
+  // Робимо запит та перевіряємо на помилку
+  try {
+    // Виклик функції запиту - getImagesByQuery(query, page)
+    data = await getImagesByQuery(textSearch, pageCurrent);
+  } catch (error) {
+    // Прибираємо лоадер
+    hideLoader();
+    // Показуємо вікно сповіщення - з помилкою
+    iziToastErrorResource();
+    // Вихід
+    return;
+  }
+
+  //  Властивісті hits - це масив з картинками - images
+  const images = data.hits;
+
+  // Прибираємо лоадер
+  hideLoader();
+
+  // Поточна сторінка - в консоль
+  // console.log(`Поточна сторінка`, pageCurrent);
+
+  // Додаємо картинки в галерею в DOM
+  createGallery(images);
+  // Якщо це НЕ остання сторінка, то показуємо кнопку < Load More >
+  if (pageCurrent < pageCount) {
+    showLoadMoreButton();
+  } else {
+    // Показати сповіщення, що дійшли до кінця колекції
+    iziToastEndCollection();
+  }
+
+  // Прокрутка на 2 висоти картки :
+  // Отримуємо висоту картки :
+  const cardEl = document.querySelector('.gallery-item');
+  const heightCard = Number(cardEl.getBoundingClientRect().height);
+  // Робимо скролл екрану, вказуючи тільки кооррдинати по Y
+  // scrollBy(xCoord, yCoord);
+  scrollBy(0, heightCard * 2);
 }
 
+// ===================================================================
+// Функція вікна сповіщення про кінець колекції
+// -------------------------------------------------------------------
 function iziToastEndCollection() {
   // Опції вікна сповіщення - зміна назв
-  // iziToastSetting.backgroundColor = '#5536edff';
-  // iziToastSetting.progressBarColor = '#1d0a6fff';
   iziToastSetting.title = '';
   iziToastSetting.message = `We're sorry, but you've reached the end of search results.`;
+  // Показуємо вікно сповіщення
+  iziToast.show(iziToastSetting);
+}
+
+// ===================================================================
+// Функція вікна сповіщення про помилку доступа до ресурсу
+// -------------------------------------------------------------------
+function iziToastErrorResource() {
+  // Опції вікна сповіщення - зміна назв
+  iziToastSetting.title = '';
+  iziToastSetting.message = `Sorry, error accessing resource`;
   // Показуємо вікно сповіщення
   iziToast.show(iziToastSetting);
 }
